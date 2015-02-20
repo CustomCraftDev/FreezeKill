@@ -1,0 +1,12 @@
+name: FreezeKill
+main: FreezeKill
+description: requested plugin made by undeaD_D
+version: 1.0
+author: DieFriiks
+authors: [DieFriiks, undeaD_D]
+databse: false
+
+commands:
+  freezekill:
+    usage: /freezekill <time/unfreeze>
+    description: FreezeKill commands
