@@ -1,0 +1,4 @@
+debug: false
+msg:
+  prefix: '&7[&cFreezeKill&7]'
+  noperm: '&c/You do not have enough access privileges for this operation.'
