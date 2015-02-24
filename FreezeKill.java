@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,6 +25,7 @@ public class FreezeKill extends JavaPlugin implements Listener{
 	
 	protected FileConfiguration config;
 	private ArrayList<Player> frozen;
+	private List<String> cmds;
 
 	
 	// PLUGIN MAIN FUNCTIONS ------------------------------------------------------------------------------------------------------------------
@@ -46,6 +48,8 @@ public class FreezeKill extends JavaPlugin implements Listener{
 		debug = config.getBoolean("debug");
 		noperm = ChatColor.translateAlternateColorCodes('&', config.getString("msg.noperm"));
 		prefix = ChatColor.translateAlternateColorCodes('&', config.getString("msg.prefix"));
+		
+		cmds = config.getStringList("cmd");
 	}
 	
 	
@@ -62,7 +66,26 @@ public class FreezeKill extends JavaPlugin implements Listener{
 		}
 			
 		if(cmd.getName().equalsIgnoreCase("freezekill") && args.length == 1){
-								
+			
+			// reload
+			if(args[0].equalsIgnoreCase("reload")){
+				if(isplayer){
+					if(p.hasPermission("freezekill.reload")){
+						p.sendMessage(prefix + " Config reloaded.");
+						loadconfig();
+					return true;
+				}
+					else{
+						p.sendMessage(noperm);
+						return true;
+					}
+				}else {
+					loadconfig();
+					System.out.println(ChatColor.stripColor(prefix + " Config reloaded."));
+					return true;
+				}
+			}
+			
 			// unfreeze
 			if(args[0].equalsIgnoreCase("unfreeze")){
 				if(isplayer){
@@ -75,7 +98,6 @@ public class FreezeKill extends JavaPlugin implements Listener{
 						return true;
 					}
 				}
-
 			}
 			
 			// time
@@ -91,7 +113,6 @@ public class FreezeKill extends JavaPlugin implements Listener{
 					}
 				}
 			}
-				
 		}
 		
 		// nothing to do here \o/
@@ -163,14 +184,26 @@ public class FreezeKill extends JavaPlugin implements Listener{
 							Thread.sleep(1000);
 						}catch(Exception e) {}
 				}
-				p.setLevel(0);
-				p.setHealth(0L);
+				execute(p);
 			}
 		});
 		t.start();
 	}
 
 	
+	protected void execute(Player p) {
+		for(String cmd : cmds) {
+			cmd = cmd.replace("%player%",p.getName());
+			String[] call = cmd.split(",");
+			if(Boolean.parseBoolean(call[0])) {
+				getServer().dispatchCommand(getServer().getConsoleSender(), call[1]);
+			}else {
+				getServer().dispatchCommand(p, call[1]);
+			}
+		}
+	}
+
+
 	protected void unfreeze(Player p) {
 		frozen.remove(p);
 		p.setLevel(0);
