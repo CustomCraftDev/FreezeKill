@@ -4,7 +4,8 @@ msg:
   noperm: '&c/You do not have enough access privileges for this operation.'
 cmd:
   - 'true,say this command is executed by console'
-  - 'false,kill'
-  - 'true,say that kill command was executed by %player%'
   - 'true,say % player % gets replaced by the playername ...'
+  - 'true,say %player%'
   - 'true,say you can add more commands easily ...'
+  - 'true,say the player gets teleported to that location (world,x,y,z)'
+  - 'TELEPORT,world,100,100,100'
