@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Updater implements Listener{
 	private FreezeKill plugin;
-	private int version = 2;
+	private int version = 3;
 
 	@SuppressWarnings("deprecation")
 	public Updater(FreezeKill plugin) {
