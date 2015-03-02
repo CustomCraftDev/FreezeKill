@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,6 +33,10 @@ public class FreezeKill extends JavaPlugin implements Listener{
 	
 	
 	public void onEnable() {
+		config = getConfig();
+		config.options().copyDefaults(true);
+		saveConfig();
+		
 		loadconfig();
 		new Updater(this);
 		
@@ -40,11 +45,7 @@ public class FreezeKill extends JavaPlugin implements Listener{
 	}
 
 
-	private void loadconfig(){
-		config = getConfig();
-		config.options().copyDefaults(true);
-		saveConfig();
-		
+	private void loadconfig(){	
 		debug = config.getBoolean("debug");
 		noperm = ChatColor.translateAlternateColorCodes('&', config.getString("msg.noperm"));
 		prefix = ChatColor.translateAlternateColorCodes('&', config.getString("msg.prefix"));
@@ -72,6 +73,9 @@ public class FreezeKill extends JavaPlugin implements Listener{
 				if(isplayer){
 					if(p.hasPermission("freezekill.reload")){
 						p.sendMessage(prefix + " Config reloaded.");
+							config = null;
+							cmds = null;
+							config = getConfig();
 						loadconfig();
 					return true;
 				}
@@ -193,13 +197,26 @@ public class FreezeKill extends JavaPlugin implements Listener{
 	
 	protected void execute(Player p) {
 		for(String cmd : cmds) {
-			cmd = cmd.replace("%player%",p.getName());
-			String[] call = cmd.split(",");
-			if(Boolean.parseBoolean(call[0])) {
-				getServer().dispatchCommand(getServer().getConsoleSender(), call[1]);
+			if(cmd.startsWith("TELEPORT")) {
+				String[] loc = cmd.split(",");
+				    World world = this.getServer().getWorld(loc[1]);         
+					double x = Double.parseDouble(loc[2]);
+					double y = Double.parseDouble(loc[3]);
+					double z = Double.parseDouble(loc[4]);
+				Location tp = new Location(world,x,y,z);
+				p.teleport(tp);
 			}else {
-				getServer().dispatchCommand(p, call[1]);
+				cmd = cmd.replace("%player%",p.getName());
+				String[] call = cmd.split(",");
+				if(Boolean.parseBoolean(call[0])) {
+					getServer().dispatchCommand(getServer().getConsoleSender(), call[1]);
+				}else {
+					getServer().dispatchCommand(p, call[1]);
+				}
 			}
+		}
+		if(isfrozen(p)) {
+			unfreeze(p);
 		}
 	}
 
